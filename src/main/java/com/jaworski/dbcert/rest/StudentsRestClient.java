@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jaworski.dbcert.dto.StudentDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -13,30 +14,30 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Component
 public class StudentsRestClient {
 
+    @Value("${rest.client.url}")
+    private String restClientHost;
+
     private static final Logger LOG = LogManager.getLogger(StudentsRestClient.class);
     private final RestTemplate restTemplate = new RestTemplateBuilder()
-            .readTimeout(Duration.ofSeconds(20))
-            .connectTimeout(Duration.ofSeconds(20))
-            .rootUri("http://localhost:8080")
+            .readTimeout(Duration.ofSeconds(5))
+            .connectTimeout(Duration.ofSeconds(5))
+            .rootUri("http://" + restClientHost + "/api/v1")
             .build();
 
     public void sendStudents(Collection<StudentDTO> students) throws JsonProcessingException, RestClientException {
         ResponseEntity<String> stringResponseEntity = restTemplate
-                .postForEntity("http://localhost:8080/api/students", students, String.class);
+                .postForEntity("/students", students, String.class);
         LOG.info(stringResponseEntity.getBody());
         ObjectMapper objectMapper = new ObjectMapper();
-        List<Integer> newAddedStudents = new ArrayList<>();
-        List<Integer> result = objectMapper.readValue(stringResponseEntity.getBody(), new TypeReference<>() {
+        List<Integer> result = objectMapper.readValue(stringResponseEntity.getBody(), new TypeReference<List<Integer>>() {
         });
-        newAddedStudents.addAll(result);
-
-        LOG.info("New added students: {}", newAddedStudents);
+        LOG.info("New added students: {}", result == null ? Collections.emptyList() : result);
     }
 }
