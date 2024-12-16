@@ -8,10 +8,8 @@ SET APP_FILE=dbcert
 SET APP_PATH=C:\\Users\\Tomek\\IdeaProjects\\dbcert
 SET FIXED_RATE=5000
 SET INITIAL_DELAY=1000
-SET FILE_PATH=C:\\Users\\Tomek\\IdeaProjects\\dbcert\\db\\kurs2002.mdb
-SET RESTCLIENT_HOST=127.0.0.1
-SET RESTCLIENT_PORT=8080
-
+SET FILE_PATH=D:\\github\\db-cert\\db\\kurs2002.mdb
+SET RESTCLIENT_URL=http://localhost:8081
 
 echo =====================================
 echo Checking for Java installation ...
@@ -32,7 +30,7 @@ java -jar target/%APP_FILE%-%JAR_FILE_VERSION%.jar %JAVA_TOOL_OPTIONS%
 --task.fixedRate=%FIXED_RATE%
 --task.initialDelay=%INITIAL_DELAY%
 --db.file.path=%FILE_PATH%
---rest.client.url=http://%RESTCLIENT_HOST%:%RESTCLIENT_PORT%
+--rest.client.url=%RESTCLIENT_URL%
 
 IF %ERRORLEVEL% NEQ 0 (
     echo Error: Failed to start %APP_FILE%.

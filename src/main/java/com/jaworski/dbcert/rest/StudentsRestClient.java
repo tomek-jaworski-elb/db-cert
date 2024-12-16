@@ -28,12 +28,11 @@ public class StudentsRestClient {
     private final RestTemplate restTemplate = new RestTemplateBuilder()
             .readTimeout(Duration.ofSeconds(5))
             .connectTimeout(Duration.ofSeconds(5))
-            .rootUri("http://" + restClientHost + "/api/v1")
             .build();
 
     public void sendStudents(Collection<StudentDTO> students) throws JsonProcessingException, RestClientException {
         ResponseEntity<String> stringResponseEntity = restTemplate
-                .postForEntity("/students", students, String.class);
+                .postForEntity( restClientHost + "/api/v1" + "/student", students, String.class);
         LOG.info(stringResponseEntity.getBody());
         ObjectMapper objectMapper = new ObjectMapper();
         List<Integer> result = objectMapper.readValue(stringResponseEntity.getBody(), new TypeReference<List<Integer>>() {
