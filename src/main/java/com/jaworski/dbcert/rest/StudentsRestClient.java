@@ -15,7 +15,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -33,10 +32,12 @@ public class StudentsRestClient {
     public void sendStudents(Collection<StudentDTO> students) throws JsonProcessingException, RestClientException {
         ResponseEntity<String> stringResponseEntity = restTemplate
                 .postForEntity( restClientHost + "/api/v1" + "/student", students, String.class);
-        LOG.info(stringResponseEntity.getBody());
         ObjectMapper objectMapper = new ObjectMapper();
         List<Integer> result = objectMapper.readValue(stringResponseEntity.getBody(), new TypeReference<List<Integer>>() {
         });
-        LOG.info("New added students: {}", result == null ? Collections.emptyList() : result);
+        if (!result.isEmpty()) {
+            LOG.info("New added students count: {}",result.size());
+            LOG.info("New added students id: {}",result);
+        }
     }
 }

@@ -3,8 +3,6 @@ package com.jaworski.dbcert.repository;
 import com.jaworski.dbcert.db.DataSourceConfiguration;
 import com.jaworski.dbcert.db.TableKursmain;
 import com.jaworski.dbcert.entity.Student;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -17,7 +15,6 @@ import java.util.Collection;
 @Component
 public class StudentsRepository {
 
-    private static final Logger LOG = LogManager.getLogger(StudentsRepository.class);
 
     private final DataSourceConfiguration dataSourceConfiguration;
 
@@ -26,7 +23,6 @@ public class StudentsRepository {
     }
 
     public Collection<Student> getAllStudents() throws SQLException, ClassNotFoundException {
-        LOG.info("Get all students. {}", System.currentTimeMillis());
         Connection sqlConnection = dataSourceConfiguration.getSqlConnection();
         Statement statement = sqlConnection.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM [" + TableKursmain.TABLE_NAME + "]" +

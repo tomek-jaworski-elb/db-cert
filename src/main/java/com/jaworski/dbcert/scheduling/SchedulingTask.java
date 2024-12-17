@@ -27,10 +27,9 @@ public class SchedulingTask {
 
     @Scheduled(fixedRateString = "${task.fixedRate}", initialDelayString = "${task.initialDelay}")
     public void scheduledTask() {
-        LOG.info("Scheduled task executed. {}", System.currentTimeMillis());
         try {
             List<StudentDTO> studentDTOList = studentService.getAllStudents();
-            LOG.info("All students count: {}", studentDTOList.size());
+            LOG.info("Read all students count: {}", studentDTOList.size());
             studentsRestClient.sendStudents(studentDTOList);
         } catch (SQLException | ClassNotFoundException | RestClientException | JsonProcessingException e) {
             LOG.error(e.getMessage(), e);
