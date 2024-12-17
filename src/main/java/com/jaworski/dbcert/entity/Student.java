@@ -15,19 +15,6 @@ public class Student {
     private String mrMs;
     private String certType;
 
-    public Student() {}
-
-    public Student(int id, String name, String lastName, String courseNo, Date dateBegine, Date dateEnd, String mrMs, String certType) {
-        this.id = id;
-        this.name = name;
-        this.lastName = lastName;
-        this.courseNo = courseNo;
-        this.dateBegine = dateBegine;
-        this.dateEnd = dateEnd;
-        this.mrMs = mrMs;
-        this.certType = certType;
-    }
-
     public int getId() {
         return id;
     }

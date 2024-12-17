@@ -1,6 +1,7 @@
 package com.jaworski.dbcert.dto;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class StudentDTO {
     private int id;
@@ -11,19 +12,6 @@ public class StudentDTO {
     private Date dateEnd;
     private String mrMs;
     private String certType;
-
-    public StudentDTO() {}
-
-    public StudentDTO(int id, String name, String lastName, String courseNo, Date dateBegine, Date dateEnd, String mrMs, String certType) {
-        this.id = id;
-        this.name = name;
-        this.lastName = lastName;
-        this.courseNo = courseNo;
-        this.dateBegine = dateBegine;
-        this.dateEnd = dateEnd;
-        this.mrMs = mrMs;
-        this.certType = certType;
-    }
 
     public int getId() {
         return id;
@@ -101,5 +89,17 @@ public class StudentDTO {
                 ", mrMs='" + mrMs + '\'' +
                 ", certType='" + certType + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        StudentDTO that = (StudentDTO) o;
+        return id == that.id && Objects.equals(name, that.name) && Objects.equals(lastName, that.lastName) && Objects.equals(courseNo, that.courseNo) && Objects.equals(dateBegine, that.dateBegine) && Objects.equals(dateEnd, that.dateEnd) && Objects.equals(mrMs, that.mrMs) && Objects.equals(certType, that.certType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, lastName, courseNo, dateBegine, dateEnd, mrMs, certType);
     }
 }
