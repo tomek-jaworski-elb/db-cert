@@ -34,7 +34,7 @@ public class SchedulingTask {
             List<StudentDTO> studentDTOList = studentService.getAllStudents();
             LOG.info("Read all students count: {}", studentDTOList.size());
             if (fileDBUpdateChecker.isFileUpdated()) {
-                LOG.info("File updated");
+                LOG.info("File updated. Sending updated students");
                 studentsRestClient.sendStudents(studentDTOList);
             }
         } catch (SQLException | ClassNotFoundException | RestClientException | JsonProcessingException e) {
