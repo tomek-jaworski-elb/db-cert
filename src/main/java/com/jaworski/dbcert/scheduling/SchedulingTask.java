@@ -7,6 +7,8 @@ import com.jaworski.dbcert.service.FileDBUpdateChecker;
 import com.jaworski.dbcert.service.StudentService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -21,11 +23,15 @@ public class SchedulingTask {
     private final StudentsRestClient studentsRestClient;
     private final StudentService studentService;
     private final FileDBUpdateChecker fileDBUpdateChecker;
+    private final ApplicationContext appContext;
 
-    public SchedulingTask(StudentsRestClient studentsRestClient, StudentService studentService, FileDBUpdateChecker fileDBUpdateChecker) {
+
+    public SchedulingTask(StudentsRestClient studentsRestClient, StudentService studentService, FileDBUpdateChecker fileDBUpdateChecker,
+                          ApplicationContext appContext) {
         this.studentsRestClient = studentsRestClient;
         this.studentService = studentService;
         this.fileDBUpdateChecker = fileDBUpdateChecker;
+        this.appContext = appContext;
     }
 
     @Scheduled(fixedRateString = "${task.fixedRate}", initialDelayString = "${task.initialDelay}")
@@ -36,8 +42,19 @@ public class SchedulingTask {
             if (fileDBUpdateChecker.isFileUpdated()) {
                 LOG.info("File updated. Sending updated students");
                 studentsRestClient.sendStudents(studentDTOList);
+                LOG.info("Exiting application");
+                shutdownApplication(Thread.currentThread());
             }
         } catch (SQLException | ClassNotFoundException | RestClientException | JsonProcessingException e) {
+            LOG.error(e.getMessage(), e);
+        }
+    }
+
+    private void shutdownApplication(Thread thread) {
+        try {
+            thread.interrupt();
+            SpringApplication.exit(appContext, () -> 0);
+        } catch (SecurityException e) {
             LOG.error(e.getMessage(), e);
         }
     }
