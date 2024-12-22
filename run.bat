@@ -8,7 +8,7 @@ SET APP_FILE=dbcert
 SET APP_PATH=C:\\Users\\Tomek\\IdeaProjects\\dbcert
 SET FIXED_RATE=5000
 SET INITIAL_DELAY=1000
-SET FILE_PATH=D:\\github\\db-cert\\db\\kurs2002.mdb
+SET FILE_PATH=C:\\Users\\Tomek\\db-app\\db\\kurs2002.mdb
 SET RESTCLIENT_URL=http://localhost:8081
 
 echo =====================================
@@ -42,7 +42,8 @@ IF %ERRORLEVEL% NEQ 0 (
 echo =====================================
 echo %APP_FILE% is running successfully.
 echo =====================================
-pause
+timeout /t 10
+exit /b 0
 
 
 
