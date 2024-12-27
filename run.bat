@@ -2,6 +2,7 @@
 REM Batch Script to Check Java Version and Run the db-access-service
 REM java -jar dbcert-0.0.1-SNAPSHOT.jar --task.fixedRate=5000 --task.initialDelay=2000
 
+REM Define environment variables
 SET JAR_FILE_VERSION=1.0
 SET JAVA_TOOL_OPTIONS=-Xms256m -Xmx512m
 SET APP_FILE=dbcert
