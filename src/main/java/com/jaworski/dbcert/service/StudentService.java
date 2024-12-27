@@ -20,7 +20,7 @@ public class StudentService {
         this.studentMapper = studentMapper;
     }
 
-    public List<StudentDTO> getAllStudents() throws SQLException, ClassNotFoundException {
+    public List<StudentDTO> getAllStudents() throws SQLException, ClassNotFoundException, FileNotFoundException {
         return studentsRepository.getAllStudents()
                 .stream()
                 .map(studentMapper::mapToStudentDTO)

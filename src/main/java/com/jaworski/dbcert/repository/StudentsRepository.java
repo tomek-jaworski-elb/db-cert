@@ -23,7 +23,7 @@ public class StudentsRepository {
         this.dataSourceConfiguration = dataSourceConfiguration;
     }
 
-    public Collection<Student> getAllStudents() throws SQLException, ClassNotFoundException {
+    public Collection<Student> getAllStudents() throws SQLException, ClassNotFoundException, FileNotFoundException {
         Connection sqlConnection = dataSourceConfiguration.getSqlConnection();
         Statement statement = sqlConnection.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM [" + TableKursmain.TABLE_NAME + "]" +

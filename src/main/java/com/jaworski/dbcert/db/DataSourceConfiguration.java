@@ -22,20 +22,20 @@ public class DataSourceConfiguration {
     private static final String JDBC_UCANACCESS = "jdbc:ucanaccess://";
 
 
-    public Connection getSqlConnection() throws SQLException, ClassNotFoundException {
+    public Connection getSqlConnection() throws SQLException, ClassNotFoundException, FileNotFoundException {
         System.setProperty("hsqldb.method_class_names", "net.ucanaccess.converters.*"); // see http://hsqldb.org/doc/2.0/guide/sqlroutines-chapt.html#src_jrt_access_control
         Class.forName(NET_UCANACCESS_JDBC_UCANACCESS_DRIVER);
         Path path = getPathToFileDB();
         return DriverManager.getConnection(JDBC_UCANACCESS + path + ";memory=false");
     }
 
-    private Path getPathToFileDB() {
+    private Path getPathToFileDB() throws FileNotFoundException {
         Path path = Path.of(".");
         String fileDbPath = filePath;
         path = path.resolve(fileDbPath);
         if (!path.toFile().isFile()) {
             LOG.error("File not found: {}", path);
-            throw new RuntimeException("File not found: " + path);
+            throw new FileNotFoundException("File not found: " + path);
         }
         return path;
     }

@@ -49,7 +49,7 @@ public class SchedulingTask {
             retryCount = 0;
             LOG.info("Exiting application");
             shutdownApplication(Thread.currentThread(), 0);
-        } catch (SQLException | ClassNotFoundException | RestClientException | JsonProcessingException e) {
+        } catch (SQLException | ClassNotFoundException | RestClientException | JsonProcessingException | FileNotFoundException e) {
             retryCount++;
             if (retryCount <= taskRetryCountMax) {
                 LOG.warn("Error while sending data to rest client. Retrying in {} seconds. Attempt: {}",
