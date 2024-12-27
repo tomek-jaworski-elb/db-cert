@@ -1,10 +1,11 @@
 package com.jaworski.dbcert.db;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -16,7 +17,7 @@ public class DataSourceConfiguration {
     @Value("${db.file.path}")
     private String filePath;
 
-    private static final Logger LOG = LogManager.getLogger(DataSourceConfiguration.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DataSourceConfiguration.class);
     private static final String NET_UCANACCESS_JDBC_UCANACCESS_DRIVER = "net.ucanaccess.jdbc.UcanaccessDriver";
     private static final String JDBC_UCANACCESS = "jdbc:ucanaccess://";
 

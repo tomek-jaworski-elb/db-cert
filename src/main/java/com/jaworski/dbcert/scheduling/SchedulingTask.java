@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jaworski.dbcert.dto.StudentDTO;
 import com.jaworski.dbcert.rest.StudentsRestClient;
 import com.jaworski.dbcert.service.StudentService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
@@ -13,13 +13,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.List;
 
 @Component
 public class SchedulingTask {
 
-    private static final Logger LOG = LogManager.getLogger(SchedulingTask.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SchedulingTask.class);
     private final StudentsRestClient studentsRestClient;
     private final StudentService studentService;
     private final ApplicationContext appContext;

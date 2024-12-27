@@ -1,14 +1,14 @@
 package com.jaworski.dbcert;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class InfoBean {
 
-    private static final Logger LOG = LogManager.getLogger(InfoBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InfoBean.class);
 
     @Value("${task.fixedRate}")
     private String taskFixedRate;

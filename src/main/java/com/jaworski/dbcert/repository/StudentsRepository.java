@@ -5,6 +5,7 @@ import com.jaworski.dbcert.db.TableKursmain;
 import com.jaworski.dbcert.entity.Student;
 import org.springframework.stereotype.Component;
 
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
