@@ -2,6 +2,7 @@
 REM Batch Script to Check Java Version and Run the db-access-service
 REM java -jar dbcert-0.0.1-SNAPSHOT.jar --task.fixedRate=5000 --task.initialDelay=2000
 
+REM Define environment variables
 SET JAR_FILE_VERSION=1.0
 SET JAVA_TOOL_OPTIONS=-Xms256m -Xmx512m
 SET APP_FILE=dbcert
@@ -10,6 +11,7 @@ SET FIXED_RATE=5000
 SET INITIAL_DELAY=1000
 SET FILE_PATH=C:\\Users\\Tomek\\db-app\\db\\kurs2002.mdb
 SET RESTCLIENT_URL=http://localhost:8081
+SET RETRY_COUNT=3
 
 echo =====================================
 echo Checking for Java installation ...
@@ -26,11 +28,12 @@ IF %ERRORLEVEL% NEQ 0 (
 echo =====================================
 echo Running %APP_FILE%-%JAR_FILE_VERSION% ...
 echo =====================================
-java -jar target/%APP_FILE%-%JAR_FILE_VERSION%.jar %JAVA_TOOL_OPTIONS%
---task.fixedRate=%FIXED_RATE%
---task.initialDelay=%INITIAL_DELAY%
---db.file.path=%FILE_PATH%
---rest.client.url=%RESTCLIENT_URL%
+java -jar target/%APP_FILE%-%JAR_FILE_VERSION%.jar %JAVA_TOOL_OPTIONS% ^
+--task.fixedRate=%FIXED_RATE% ^
+--task.initialDelay=%INITIAL_DELAY% ^
+--db.file.path=%FILE_PATH% ^
+--rest.client.url=%RESTCLIENT_URL% ^
+--task.retryCountMax=%RETRY_COUNT%
 
 IF %ERRORLEVEL% NEQ 0 (
     echo Error: Failed to start %APP_FILE%.
@@ -42,8 +45,5 @@ IF %ERRORLEVEL% NEQ 0 (
 echo =====================================
 echo %APP_FILE% is running successfully.
 echo =====================================
-timeout /t 10
+timeout /t 5
 exit /b 0
-
-
-

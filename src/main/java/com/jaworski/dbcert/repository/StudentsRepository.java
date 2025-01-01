@@ -5,6 +5,7 @@ import com.jaworski.dbcert.db.TableKursmain;
 import com.jaworski.dbcert.entity.Student;
 import org.springframework.stereotype.Component;
 
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +23,7 @@ public class StudentsRepository {
         this.dataSourceConfiguration = dataSourceConfiguration;
     }
 
-    public Collection<Student> getAllStudents() throws SQLException, ClassNotFoundException {
+    public Collection<Student> getAllStudents() throws SQLException, ClassNotFoundException, FileNotFoundException {
         Connection sqlConnection = dataSourceConfiguration.getSqlConnection();
         Statement statement = sqlConnection.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM [" + TableKursmain.TABLE_NAME + "]" +

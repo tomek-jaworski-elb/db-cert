@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jaworski.dbcert.dto.StudentDTO;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class StudentsRestClient {
     @Value("${rest.client.url}")
     private String restClientHost;
 
-    private static final Logger LOG = LogManager.getLogger(StudentsRestClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StudentsRestClient.class);
     private final RestTemplate restTemplate = new RestTemplateBuilder()
             .readTimeout(Duration.ofSeconds(5))
             .connectTimeout(Duration.ofSeconds(5))

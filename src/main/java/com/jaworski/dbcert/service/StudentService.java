@@ -5,6 +5,7 @@ import com.jaworski.dbcert.mappers.StudentMapper;
 import com.jaworski.dbcert.repository.StudentsRepository;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class StudentService {
         this.studentMapper = studentMapper;
     }
 
-    public List<StudentDTO> getAllStudents() throws SQLException, ClassNotFoundException {
+    public List<StudentDTO> getAllStudents() throws SQLException, ClassNotFoundException, FileNotFoundException {
         return studentsRepository.getAllStudents()
                 .stream()
                 .map(studentMapper::mapToStudentDTO)
