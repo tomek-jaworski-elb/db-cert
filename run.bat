@@ -28,11 +28,11 @@ IF %ERRORLEVEL% NEQ 0 (
 echo =====================================
 echo Running %APP_FILE%-%JAR_FILE_VERSION% ...
 echo =====================================
-java -jar target/%APP_FILE%-%JAR_FILE_VERSION%.jar %JAVA_TOOL_OPTIONS%
---task.fixedRate=%FIXED_RATE%
---task.initialDelay=%INITIAL_DELAY%
---db.file.path=%FILE_PATH%
---rest.client.url=%RESTCLIENT_URL%
+java -jar target/%APP_FILE%-%JAR_FILE_VERSION%.jar %JAVA_TOOL_OPTIONS% ^
+--task.fixedRate=%FIXED_RATE% ^
+--task.initialDelay=%INITIAL_DELAY% ^
+--db.file.path=%FILE_PATH% ^
+--rest.client.url=%RESTCLIENT_URL% ^
 --task.retryCountMax=%RETRY_COUNT%
 
 IF %ERRORLEVEL% NEQ 0 (
@@ -45,8 +45,5 @@ IF %ERRORLEVEL% NEQ 0 (
 echo =====================================
 echo %APP_FILE% is running successfully.
 echo =====================================
-timeout /t 10
+timeout /t 5
 exit /b 0
-
-
-
