@@ -1,5 +1,6 @@
 package com.jaworski.dbcert.entity;
 
+import java.io.InputStream;
 import java.util.Date;
 import java.util.Objects;
 
@@ -14,6 +15,7 @@ public class Student {
     private Date dateEnd;
     private String mrMs;
     private String certType;
+    private InputStream photo;
 
     public int getId() {
         return id;
@@ -77,6 +79,14 @@ public class Student {
 
     public void setCertType(String certType) {
         this.certType = certType;
+    }
+
+    public InputStream getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(InputStream photo) {
+        this.photo = photo;
     }
 
 
