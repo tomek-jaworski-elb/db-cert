@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.InputStream;
+import java.sql.Blob;
 import java.util.Date;
 
 @Data
@@ -20,6 +20,6 @@ public class Student {
     private Date dateEnd;
     private String mrMs;
     private String certType;
-    private InputStream photo;
+    private Blob photo;
 
 }
