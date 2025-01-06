@@ -12,6 +12,8 @@ SET INITIAL_DELAY=1000
 SET FILE_PATH=C:\\Users\\Tomek\\db-app\\db\\kurs2002.mdb
 SET RESTCLIENT_URL=http://localhost:8081
 SET RETRY_COUNT=3
+SET READ_TIMEOUT=60
+SET CONNECT_TIMEOUT=60
 
 echo =====================================
 echo Checking for Java installation ...
@@ -33,7 +35,9 @@ java -jar target/%APP_FILE%-%JAR_FILE_VERSION%.jar %JAVA_TOOL_OPTIONS% ^
 --task.initialDelay=%INITIAL_DELAY% ^
 --db.file.path=%FILE_PATH% ^
 --rest.client.url=%RESTCLIENT_URL% ^
---task.retryCountMax=%RETRY_COUNT%
+--task.retryCountMax=%RETRY_COUNT% ^
+--rest.client.custom.readtimeout=%READ_TIMEOUT% ^
+--rest.client.custom.connecttimeout=%CONNECT_TIMEOUT%
 
 IF %ERRORLEVEL% NEQ 0 (
     echo Error: Failed to start %APP_FILE%.

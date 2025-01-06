@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -23,14 +24,24 @@ public class StudentsRestClient {
     @Value("${rest.client.url}")
     private String restClientHost;
 
+    @Value("${rest.client.custom.readtimeout}")
+    private int readTimeout;
+
+    @Value("${rest.client.custom.connecttimeout}")
+    private int connectTimeout;
+
     private static final Logger LOG = LoggerFactory.getLogger(StudentsRestClient.class);
-    private final RestTemplate restTemplate = new RestTemplateBuilder()
-            .readTimeout(Duration.ofSeconds(5))
-            .connectTimeout(Duration.ofSeconds(5))
-            .build();
+
+    @Bean
+    private RestTemplate getRestTemplate() {
+        return new RestTemplateBuilder()
+                .readTimeout(Duration.ofSeconds(connectTimeout))
+                .connectTimeout(Duration.ofSeconds(readTimeout))
+                .build();
+    }
 
     public void sendStudents(Collection<StudentDTO> students) throws JsonProcessingException, RestClientException {
-        ResponseEntity<String> stringResponseEntity = restTemplate
+        ResponseEntity<String> stringResponseEntity = getRestTemplate()
                 .postForEntity( restClientHost + "/api/v1" + "/student", students, String.class);
         ObjectMapper objectMapper = new ObjectMapper();
         List<Integer> result = objectMapper.readValue(stringResponseEntity.getBody(), new TypeReference<List<Integer>>() {
