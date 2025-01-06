@@ -11,4 +11,5 @@ public enum TableKursmain {
     public static final String MR_MS = "MrMs";
     public static final String CERT_TYPE = "CertType";
     public static final String COURSE_NO = "CourseNo";
+    public static final String PHOTO = "photo";
 }

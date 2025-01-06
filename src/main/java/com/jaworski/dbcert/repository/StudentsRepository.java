@@ -45,6 +45,7 @@ public class StudentsRepository {
             student.setMrMs(resultSet.getString(TableKursmain.MR_MS));
             student.setCertType(resultSet.getString(TableKursmain.CERT_TYPE));
             student.setCourseNo(resultSet.getString(TableKursmain.COURSE_NO));
+            student.setPhoto(resultSet.getBlob(TableKursmain.PHOTO));
             result.add(student);
         }
         return result;

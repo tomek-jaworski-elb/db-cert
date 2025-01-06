@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jaworski.dbcert.dto.StudentDTO;
 import com.jaworski.dbcert.rest.StudentsRestClient;
 import com.jaworski.dbcert.service.StudentService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Component
 public class SchedulingTask {
 
@@ -31,13 +33,6 @@ public class SchedulingTask {
 
     @Value("${task.retryCountMax}")
     private int taskRetryCountMax;
-
-    public SchedulingTask(StudentsRestClient studentsRestClient, StudentService studentService,
-                          ApplicationContext appContext) {
-        this.studentsRestClient = studentsRestClient;
-        this.studentService = studentService;
-        this.appContext = appContext;
-    }
 
     @Scheduled(fixedRateString = "${task.fixedRate}", initialDelayString = "${task.initialDelay}")
     public void scheduledTask() {
