@@ -1,7 +1,7 @@
 package com.jaworski.dbcert.mappers;
 
-import com.jaworski.dbcert.entity.Student;
 import com.jaworski.dbcert.dto.StudentDTO;
+import com.jaworski.dbcert.entity.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
@@ -29,7 +29,9 @@ public class StudentMapper {
         studentDTO.setCertType(student.getCertType());
         Blob photo = student.getPhoto();
         try {
-            String base64Photo = Base64.getEncoder().encodeToString(photo.getBytes(1, (int) photo.length()));
+            String base64Photo = Base64.getEncoder().encodeToString(photo == null ?
+                    new byte[0] :
+                    photo.getBytes(1, (int) photo.length()));
             studentDTO.setPhoto(base64Photo);
             return studentDTO;
         } catch (SQLException e) {
