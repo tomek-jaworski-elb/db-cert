@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jaworski.dbcert.dto.StudentDTO;
+import com.jaworski.dbcert.resources.CustomResources;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -28,22 +28,8 @@ import java.util.concurrent.TimeoutException;
 @Component
 public class StudentsRestClient {
 
-    @Value("${rest.client.url}")
-    private String restClientHost;
-
-    @Value("${rest.client.custom.readtimeout}")
-    private int readTimeout;
-
-    @Value("${rest.client.custom.connecttimeout}")
-    private int connectTimeout;
-
-    @Value("${http.client.username}")
-    private String user;
-
-    @Value("${http.client.password}")
-    private String password;
-
     private final HttpClient httpClient;
+    private final CustomResources customResources;
 
     private static final Logger LOG = LoggerFactory.getLogger(StudentsRestClient.class);
 
@@ -56,14 +42,14 @@ public class StudentsRestClient {
         try {
 
             HttpRequest build = HttpRequest.newBuilder()
-                    .uri(URI.create(restClientHost + "/api/v1" + "/student"))
+                    .uri(URI.create(customResources.getRestClientHost() + "/api/v1" + "/student"))
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeaderValue(user, password))
+                    .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeaderValue(customResources.getUser(), customResources.getPassword()))
                     .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(students)))
                     .build();
 
             HttpResponse<String> send = httpClient.sendAsync(build, HttpResponse.BodyHandlers.ofString())
-                    .get(readTimeout, TimeUnit.SECONDS);
+                    .get(customResources.getReadTimeout(), TimeUnit.SECONDS);
 
             if (send.statusCode() != 200) {
                 throw new RestClientException("Server respond with status code: " + send.statusCode());

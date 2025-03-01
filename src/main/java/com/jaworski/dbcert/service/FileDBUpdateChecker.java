@@ -1,6 +1,7 @@
 package com.jaworski.dbcert.service;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.jaworski.dbcert.resources.CustomResources;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -9,12 +10,10 @@ import java.io.File;
 
 @Service
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+@RequiredArgsConstructor
 public class FileDBUpdateChecker {
 
-
-    @Value("${db.file.path}")
-    private String filePath;
-
+    private final CustomResources customResources;
     private long lastUpdateTime = 0;
 
     public boolean isFileUpdated() {
@@ -26,7 +25,7 @@ public class FileDBUpdateChecker {
     }
 
     private long updateLastUpdateTime() {
-        File file = new File(filePath);
+        File file = new File(customResources.getDbFilePath());
         return file.lastModified();
     }
 }
