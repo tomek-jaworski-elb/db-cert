@@ -1,8 +1,9 @@
 package com.jaworski.dbcert.db;
 
+import com.jaworski.dbcert.resources.CustomResources;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.FileNotFoundException;
@@ -12,11 +13,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 @Component
+@RequiredArgsConstructor
 public class DataSourceConfiguration {
 
-    @Value("${db.file.path}")
-    private String filePath;
-
+    private final CustomResources customResources;
     private static final Logger LOG = LoggerFactory.getLogger(DataSourceConfiguration.class);
     private static final String NET_UCANACCESS_JDBC_UCANACCESS_DRIVER = "net.ucanaccess.jdbc.UcanaccessDriver";
     private static final String JDBC_UCANACCESS = "jdbc:ucanaccess://";
@@ -31,7 +31,7 @@ public class DataSourceConfiguration {
 
     private Path getPathToFileDB() throws FileNotFoundException {
         Path path = Path.of(".");
-        String fileDbPath = filePath;
+        String fileDbPath = customResources.getDbFilePath();
         path = path.resolve(fileDbPath);
         if (!path.toFile().isFile()) {
             LOG.error("File not found: {}", path);

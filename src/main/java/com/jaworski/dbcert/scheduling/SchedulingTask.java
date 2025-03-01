@@ -2,12 +2,12 @@ package com.jaworski.dbcert.scheduling;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jaworski.dbcert.dto.StudentDTO;
+import com.jaworski.dbcert.resources.CustomResources;
 import com.jaworski.dbcert.rest.StudentsRestClient;
 import com.jaworski.dbcert.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,12 +27,7 @@ public class SchedulingTask {
     private final StudentService studentService;
     private final ApplicationContext appContext;
     private int retryCount = 0;
-
-    @Value("${task.fixedRate}")
-    private String taskFixedRate;
-
-    @Value("${task.retryCountMax}")
-    private int taskRetryCountMax;
+    private final CustomResources customResources;
 
     @Scheduled(fixedRateString = "${task.fixedRate}", initialDelayString = "${task.initialDelay}")
     public void scheduledTask() {
@@ -46,9 +41,9 @@ public class SchedulingTask {
             shutdownApplication(Thread.currentThread(), 0);
         } catch (SQLException | ClassNotFoundException | RestClientException | JsonProcessingException | FileNotFoundException e) {
             retryCount++;
-            if (retryCount <= taskRetryCountMax) {
+            if (retryCount <= customResources.getTaskRetryCountMax()) {
                 LOG.warn("Error while sending data to rest client. Retrying in {} seconds. Attempt: {}",
-                        Integer.parseInt(taskFixedRate) / 1_000, retryCount);
+                        Integer.parseInt(customResources.getTaskFixedRate()) / 1_000, retryCount);
             } else {
                 LOG.error("Error while sending data to rest client. Exiting application", e);
                 shutdownApplication(Thread.currentThread(), 1);
