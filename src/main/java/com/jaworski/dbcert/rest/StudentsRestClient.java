@@ -54,7 +54,7 @@ public class StudentsRestClient {
             if (send.statusCode() != 200) {
                 throw new RestClientException("Server respond with status code: " + send.statusCode());
             } else {
-                LOG.info("{}", send.body());
+                LOG.info("{}", send.body() == null ? "" : send.body());
                 List<Integer> result = objectMapper.readValue(send.body(), new TypeReference<List<Integer>>() {
                 });
                 if (!result.isEmpty()) {
@@ -64,6 +64,7 @@ public class StudentsRestClient {
             }
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
             LOG.error(e.getMessage(), e);
+            Thread.currentThread().interrupt();
         }
     }
 }
