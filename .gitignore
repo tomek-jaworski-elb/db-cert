@@ -34,5 +34,5 @@ build/
 /.mvn/wrapper/maven-wrapper.properties
 /mvnw
 /mvnw.cmd
-/db/kurs2002.mdb
+/db/*.mdb
 /logs/
