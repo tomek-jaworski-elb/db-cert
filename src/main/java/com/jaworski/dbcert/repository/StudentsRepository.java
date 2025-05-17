@@ -46,6 +46,7 @@ public class StudentsRepository {
             student.setCertType(resultSet.getString(TableKursmain.CERT_TYPE));
             student.setCourseNo(resultSet.getString(TableKursmain.COURSE_NO));
             student.setPhoto(resultSet.getBlob(TableKursmain.PHOTO));
+            student.setInstructors(resultSet.getString(TableKursmain.INSTRUCTORS));
             result.add(student);
         }
         return result;
