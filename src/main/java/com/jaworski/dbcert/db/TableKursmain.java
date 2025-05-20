@@ -17,5 +17,6 @@ public final class TableKursmain {
     public static final String COURSE_NO = "CourseNo";
     public static final String PHOTO = "photo";
     public static final String INSTRUCTORS = "Instructors";
+    public static final String STAFF = "TODO";
 
 }
