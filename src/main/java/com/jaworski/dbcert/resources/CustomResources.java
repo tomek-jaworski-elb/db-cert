@@ -20,6 +20,9 @@ public class CustomResources {
     @Value("${db.file.path}")
     private String dbFilePath;
 
+    @Value("${db.file.instructor.path}")
+    private String dbInstructorFilePath;
+
     @Value("${task.fixedRate}")
     private String taskFixedRate;
 

@@ -3,8 +3,10 @@ package com.jaworski.dbcert.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jaworski.dbcert.dto.InstructorDto;
 import com.jaworski.dbcert.dto.StudentDTO;
 import com.jaworski.dbcert.resources.CustomResources;
+import com.jaworski.dbcert.rest.paths.Paths;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,26 +28,41 @@ import java.util.concurrent.TimeoutException;
 
 @RequiredArgsConstructor
 @Component
-public class StudentsRestClient {
+public class AISRestClientImpl implements AISRestClient {
 
     private final HttpClient httpClient;
     private final CustomResources customResources;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final Logger LOG = LoggerFactory.getLogger(StudentsRestClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AISRestClientImpl.class);
 
     private String getAuthorizationHeaderValue(String username, String password) {
         return "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
     }
 
-    public void sendStudents(Collection<StudentDTO> students) throws JsonProcessingException, RestClientException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
+    @Override
+    public <T> void sendCollection(Collection<T> collection) throws JsonProcessingException, RestClientException {
+        if (collection == null || collection.isEmpty()) {
+            return;
+        }
+        Class<?> collectionType = collection.iterator().next().getClass();
+        if (InstructorDto.class.isAssignableFrom(collectionType)) {
+            send(collection, Paths.INSTRUCTORS);
+        } else if (StudentDTO.class.isAssignableFrom(collectionType)) {
+            send(collection, Paths.STUDENTS);
+        } else {
+            throw new RestClientException("Unsupported collection type: " + collectionType.getName());
+        }
+    }
 
+    private <T> void send(Collection<T> collection, String path) throws JsonProcessingException, RestClientException {
+        String className = collection.iterator().next().getClass().getName();
+        try {
             HttpRequest build = HttpRequest.newBuilder()
-                    .uri(URI.create(customResources.getRestClientHost() + "/api/v1" + "/student"))
+                    .uri(URI.create(customResources.getRestClientHost() + Paths.ROOT + path))
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .header(HttpHeaders.AUTHORIZATION, getAuthorizationHeaderValue(customResources.getUser(), customResources.getPassword()))
-                    .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(students)))
+                    .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(collection)))
                     .build();
 
             HttpResponse<String> send = httpClient.sendAsync(build, HttpResponse.BodyHandlers.ofString())
@@ -58,8 +75,8 @@ public class StudentsRestClient {
                 List<Integer> result = objectMapper.readValue(send.body(), new TypeReference<List<Integer>>() {
                 });
                 if (!result.isEmpty()) {
-                    LOG.info("New added students count: {}", result.size());
-                    LOG.info("New added students id: {}", result);
+                    LOG.info("New added {} count: {}", className, result.size());
+                    LOG.info("New added {} id: {}", className, result);
                 }
             }
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
@@ -67,4 +84,5 @@ public class StudentsRestClient {
             Thread.currentThread().interrupt();
         }
     }
+
 }

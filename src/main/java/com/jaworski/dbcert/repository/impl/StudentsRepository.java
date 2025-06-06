@@ -1,9 +1,12 @@
-package com.jaworski.dbcert.repository;
+package com.jaworski.dbcert.repository.impl;
 
 import com.jaworski.dbcert.db.DataSourceConfiguration;
 import com.jaworski.dbcert.db.TableKursmain;
 import com.jaworski.dbcert.entity.Student;
-import org.springframework.stereotype.Component;
+import com.jaworski.dbcert.repository.AccessRepository;
+import com.jaworski.dbcert.resources.CustomResources;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.io.FileNotFoundException;
 import java.sql.Connection;
@@ -12,24 +15,24 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-@Component
-public class StudentsRepository {
+@Repository
+@RequiredArgsConstructor
+public class StudentsRepository implements AccessRepository<Student> {
 
-
+    private final CustomResources customResources;
     private final DataSourceConfiguration dataSourceConfiguration;
 
-    public StudentsRepository(DataSourceConfiguration dataSourceConfiguration) {
-        this.dataSourceConfiguration = dataSourceConfiguration;
-    }
-
-    public Collection<Student> getAllStudents() throws SQLException, ClassNotFoundException, FileNotFoundException {
-        Connection sqlConnection = dataSourceConfiguration.getSqlConnection();
+    @Override
+    public List<Student> findAll() throws SQLException, ClassNotFoundException, FileNotFoundException {
+      String filePath = customResources.getDbFilePath();
+      Connection sqlConnection = dataSourceConfiguration.getSqlConnection(filePath);
         Statement statement = sqlConnection.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM [" + TableKursmain.TABLE_NAME + "]" +
                 " ORDER BY [" + TableKursmain.DATE_END + "]" + " DESC, [" + TableKursmain.CERT_NO + "]" + " ASC");
         statement.close();
-        return getResultCollection(resultSet);
+        return getResultCollection(resultSet).stream().toList();
 
     }
 
