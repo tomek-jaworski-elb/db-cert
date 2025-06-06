@@ -1,9 +1,11 @@
 package com.jaworski.dbcert.scheduling;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.jaworski.dbcert.dto.InstructorDto;
 import com.jaworski.dbcert.dto.StudentDTO;
 import com.jaworski.dbcert.resources.CustomResources;
-import com.jaworski.dbcert.rest.StudentsRestClient;
+import com.jaworski.dbcert.rest.AISRestClient;
+import com.jaworski.dbcert.service.InstructorService;
 import com.jaworski.dbcert.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -23,19 +25,24 @@ import java.util.List;
 public class SchedulingTask {
 
     private static final Logger LOG = LoggerFactory.getLogger(SchedulingTask.class);
-    private final StudentsRestClient studentsRestClient;
     private final StudentService studentService;
     private final ApplicationContext appContext;
     private int retryCount = 0;
     private final CustomResources customResources;
+    private final InstructorService instructorService;
+    private final AISRestClient aisRestClient;
 
     @Scheduled(fixedRateString = "${task.fixedRate}", initialDelayString = "${task.initialDelay}")
     public void scheduledTask() {
         try {
-            List<StudentDTO> studentDTOList = studentService.getAllStudents();
-            LOG.info("Read all students count: {}", studentDTOList.size());
+            List<InstructorDto> instructors = instructorService.getInstructors();
+            LOG.info("Read instructors count: {}", instructors.size());
+            LOG.info("File updated. Sending updated instructors");
+            aisRestClient.sendCollection(instructors);
+            List<StudentDTO> students = studentService.getAllStudents();
+            LOG.info("Read all students count: {}", students.size());
             LOG.info("File updated. Sending updated students");
-            studentsRestClient.sendStudents(studentDTOList);
+            aisRestClient.sendCollection(students);
             retryCount = 0;
             LOG.info("Exiting application");
             shutdownApplication(Thread.currentThread(), 0);

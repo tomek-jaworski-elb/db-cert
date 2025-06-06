@@ -1,6 +1,5 @@
 package com.jaworski.dbcert.db;
 
-import com.jaworski.dbcert.resources.CustomResources;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,23 +15,21 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public class DataSourceConfiguration {
 
-    private final CustomResources customResources;
     private static final Logger LOG = LoggerFactory.getLogger(DataSourceConfiguration.class);
     private static final String NET_UCANACCESS_JDBC_UCANACCESS_DRIVER = "net.ucanaccess.jdbc.UcanaccessDriver";
     private static final String JDBC_UCANACCESS = "jdbc:ucanaccess://";
 
 
-    public Connection getSqlConnection() throws SQLException, ClassNotFoundException, FileNotFoundException {
+    public Connection getSqlConnection(String filePath) throws SQLException, ClassNotFoundException, FileNotFoundException {
         System.setProperty("hsqldb.method_class_names", "net.ucanaccess.converters.*"); // see http://hsqldb.org/doc/2.0/guide/sqlroutines-chapt.html#src_jrt_access_control
         Class.forName(NET_UCANACCESS_JDBC_UCANACCESS_DRIVER);
-        Path path = getPathToFileDB();
+        Path path = getPathToFileDB(filePath);
         return DriverManager.getConnection(JDBC_UCANACCESS + path + ";memory=false");
     }
 
-    private Path getPathToFileDB() throws FileNotFoundException {
+    private Path getPathToFileDB(String filePath) throws FileNotFoundException {
         Path path = Path.of(".");
-        String fileDbPath = customResources.getDbFilePath();
-        path = path.resolve(fileDbPath);
+        path = path.resolve(filePath);
         if (!path.toFile().isFile()) {
             LOG.error("File not found: {}", path);
             throw new FileNotFoundException("File not found: " + path);

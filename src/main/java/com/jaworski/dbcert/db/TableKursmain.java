@@ -1,7 +1,7 @@
 package com.jaworski.dbcert.db;
 
-public enum TableKursmain {
-    ;
+public final class TableKursmain {
+
     public static final String TABLE_NAME = "kursmain";
     public static final String FIRST_NAME = "Name";
     public static final String CERT_NO = "CertNo";
@@ -12,4 +12,5 @@ public enum TableKursmain {
     public static final String CERT_TYPE = "CertType";
     public static final String COURSE_NO = "CourseNo";
     public static final String PHOTO = "photo";
+
 }
