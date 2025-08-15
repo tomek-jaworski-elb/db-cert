@@ -3,68 +3,82 @@ package com.jaworski.dbcert.scheduling;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jaworski.dbcert.dto.InstructorDto;
 import com.jaworski.dbcert.dto.StudentDTO;
-import com.jaworski.dbcert.resources.CustomResources;
 import com.jaworski.dbcert.rest.AISRestClient;
 import com.jaworski.dbcert.service.InstructorService;
 import com.jaworski.dbcert.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 
-import java.io.FileNotFoundException;
-import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.Executor;
 
 @RequiredArgsConstructor
 @Component
 public class SchedulingTask {
-
     private static final Logger LOG = LoggerFactory.getLogger(SchedulingTask.class);
     private final StudentService studentService;
-    private final ApplicationContext appContext;
-    private int retryCount = 0;
-    private final CustomResources customResources;
     private final InstructorService instructorService;
     private final AISRestClient aisRestClient;
+    private final Executor ioExecutor;
 
-    @Scheduled(fixedRateString = "${task.fixedRate}", initialDelayString = "${task.initialDelay}")
-    public void scheduledTask() {
+    public void scheduledTask() throws RestClientException {
+      var startTime = LocalTime.now();
+      LOG.info("Starting scheduled task");
+      CompletableFuture<List<StudentDTO>> studentFuture = runAsync(studentService::getAllStudents);
+      CompletableFuture<List<InstructorDto>> instructorFuture = runAsync(instructorService::getInstructors);
+
+      CompletableFuture<Void> sendStudents = studentFuture.thenCompose(students -> {
+        LOG.info("Read all students count: {}", students.size());
+        LOG.info("Sending updated students");
         try {
-            List<InstructorDto> instructors = instructorService.getInstructors();
-            LOG.info("Read instructors count: {}", instructors.size());
-            LOG.info("File updated. Sending updated instructors");
-            aisRestClient.sendCollection(instructors);
-            List<StudentDTO> students = studentService.getAllStudents();
-            LOG.info("Read all students count: {}", students.size());
-            LOG.info("File updated. Sending updated students");
-            aisRestClient.sendCollection(students);
-            retryCount = 0;
-            LOG.info("Exiting application");
-            shutdownApplication(Thread.currentThread(), 0);
-        } catch (SQLException | ClassNotFoundException | RestClientException | JsonProcessingException | FileNotFoundException e) {
-            retryCount++;
-            if (retryCount <= customResources.getTaskRetryCountMax()) {
-                LOG.warn("Error while sending data to rest client. Retrying in {} seconds. Attempt: {}",
-                        Integer.parseInt(customResources.getTaskFixedRate()) / 1_000, retryCount);
-            } else {
-                LOG.error("Error while sending data to rest client. Exiting application", e);
-                shutdownApplication(Thread.currentThread(), 1);
-            }
-            LOG.error(e.getMessage(), e);
+          return aisRestClient.sendCollection(students);
+        } catch (Exception e) {
+          throw new RestClientException(e.getMessage());
         }
+      });
+
+      CompletableFuture<Void> sendInstructors = instructorFuture.thenCompose(instructors -> {
+        LOG.info("Read instructors count: {}", instructors.size());
+        LOG.info("Sending updated instructors");
+        try {
+          return aisRestClient.sendCollection(instructors);
+        } catch (JsonProcessingException e) {
+          throw new RestClientException(e.getMessage());
+        }
+      });
+
+      CompletableFuture.allOf(sendStudents, sendInstructors)
+              .whenComplete((ignored, ex) -> {
+                if (ex != null) {
+                  LOG.error("Task failed {}", ex.getMessage());
+                  throw new RestClientException(ex.getMessage());
+                } else {
+                  LOG.info("All tasks finished in {} seconds",
+                          (double) Duration.between(startTime, LocalTime.now()).toMillis() / 1_000);
+                  System.exit(0);
+                }
+              });
     }
 
-    private void shutdownApplication(Thread thread, int exitCode) {
+    private <T> CompletableFuture<List<T>> runAsync(CheckedSupplier<List<T>> supplier) {
+      return CompletableFuture.supplyAsync(() -> {
         try {
-            thread.interrupt();
-            SpringApplication.exit(appContext, () -> exitCode);
-        } catch (SecurityException e) {
-            LOG.error(e.getMessage(), e);
+          return supplier.get();
+        } catch (Exception e) {
+          throw new CompletionException(e);
         }
+      }, ioExecutor);
+    }
+
+    @FunctionalInterface
+    private interface CheckedSupplier<T> {
+        T get() throws Exception;
     }
 }
